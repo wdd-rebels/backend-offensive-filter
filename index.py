@@ -9,15 +9,18 @@ def hello():
 
 @app.route('/classify', methods = ['POST'])
 def classifyTweet():
-    tweets = request.get_json()
-    print(tweets)
-    return "NICE"
+    json = request.get_json()
+    tweet_responses = []
+    for tweet in json['tweets']:
+        tweet_responses.append(processTweet(tweet))
+    response = {'tweets': tweet_responses}
+    return jsonify(response)
 
-# def processTweet(tweet):
-#     sentiment = TextBlob(tweet['text']).sentiment
-#     response = {}
-#     response['id']=
-#     return jsonify(tweet)
+def processTweet(tweet):
+    polarity = TextBlob(tweet['text']).sentiment.polarity
+    offensive_filter_value = True if polarity<0 else False
+    response = {'id': tweet['id'], 'filter': offensive_filter_value}
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
