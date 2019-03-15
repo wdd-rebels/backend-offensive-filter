@@ -19,7 +19,8 @@ def classifyTweet():
 
 def processTweet(tweet):
     polarity = TextBlob(tweet['text']).sentiment.polarity
-    offensive_filter_value = polarity < -0.35 or (predict([tweet['text']])[0] == 1 is True) # converting between numpy boolean and bool :(
+    is_profane = 1 in predict([tweet['text']])
+    offensive_filter_value = polarity < -0.35 or is_profane
     response = {'id': tweet['id'], 'filter': offensive_filter_value}
     return response
 
