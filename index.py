@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
 from textblob import TextBlob
+from profanity_check import predict
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/healthcheck")
 def hello():
-    return "Hello World!"
+    return "up!"
 
 @app.route('/classify', methods = ['POST'])
 def classifyTweet():
@@ -18,7 +19,7 @@ def classifyTweet():
 
 def processTweet(tweet):
     polarity = TextBlob(tweet['text']).sentiment.polarity
-    offensive_filter_value = True if polarity<0 else False
+    offensive_filter_value = polarity < -0.35 or (predict([tweet['text']])[0] == 1 is True) # converting between numpy boolean and bool :(
     response = {'id': tweet['id'], 'filter': offensive_filter_value}
     return response
 
