@@ -21,16 +21,18 @@ def classifyTweet():
 def processTweet(tweet, categories):
     porter = PorterStemmer()
 
-    categories_stemmed = list(map(lambda cat: porter.stem(cat), categories))
-    tweet_stems = list(map(lambda cat: porter.stem(cat), tweet['text'].split()))
+    categories_stemmed = set(list(map(lambda cat: porter.stem(cat), categories)))
+    tweet_stems = set(list(map(lambda cat: porter.stem(cat), tweet['text'].split())))
 
-    contains_prohibited_categories = any(elem in tweet_stems for elem in categories_stemmed)
+    intersection = categories_stemmed.intersection(tweet_stems)
+
+    contains_prohibited_categories = len(intersection) > 0
     is_polarising = TextBlob(tweet['text']).sentiment.polarity < -0.35
     is_profane = 1 in predict([tweet['text']])
 
     offensive_filter_value = is_polarising or is_profane or contains_prohibited_categories
 
-    response = {'id': tweet['id'], 'filter': offensive_filter_value}
+    response = {'id': tweet['id'], 'filter': offensive_filter_value, 'categories': list(intersection)}
     return response
 
 if __name__ == '__main__':
