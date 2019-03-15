@@ -6,5 +6,5 @@
 ```sh
 source ./venv/bin/activate
 pip3 install -r requirements.txt
-FLASK_APP=test.py flask run
+FLASK_APP=index.py FLASK_ENV=development flask run
 ```
